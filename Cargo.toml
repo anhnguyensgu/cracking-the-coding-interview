@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 [workspace]
-members = ["algo", "backend-rust", "solana-hello"]
+members = ["algo", "backend-rust", "kafka-rust-producer", "solana-hello"]

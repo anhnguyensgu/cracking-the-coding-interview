@@ -1,10 +1,11 @@
 #[allow(dead_code)]
 struct Solution;
+#[allow(dead_code)]
 impl Solution {
-    pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
-        let mut i = 0;
-        let mut j = 0;
-        while i < m && j < n {}
+    pub fn merge(_nums1: &mut Vec<i32>, _m: i32, _nums2: &mut Vec<i32>, _n: i32) {
+        // let mut i = 0;
+        // let mut j = 0;
+        // while i < m && j < n {}
     }
 }
 
