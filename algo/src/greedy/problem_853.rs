@@ -3,37 +3,25 @@ struct Solution;
 #[allow(dead_code)]
 impl Solution {
     pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
-        use std::collections::BTreeMap;
-        let mut times = BTreeMap::new();
+        let mut times = vec![];
         for i in 0..position.len() {
-            times.insert(position[i], speed[i]);
+            times.push((position[i], speed[i]));
         }
+        times.sort_by(|a,b|a.0.cmp(&b.0));
 
         let mut stack = vec![];
-
         for (x2, s2) in times.iter() {
+            let time = (target - x2) as f64 / *s2 as f64;
             while !stack.is_empty() {
-                let &(x1, s1) = stack.last().unwrap();
-                println!("{x1} {s1} vs {x2} {s2}");
-                if s2 >= s1 {
-                    break;
-                }
-
-                let t: i32 = (x2 - x1) / (s1 - s2);
-                let meet_at = x1 + t * s1;
-                let meet_at2 = x2 + t * s2;
-                println!("meet at {meet_at} when {t}");
-                println!("meet at {meet_at2} when {t}");
-                if meet_at > target || meet_at2 > target {
-                    break;
+                let first = stack.last().unwrap();
+                if time < *first {
+                   break;
                 }
                 stack.pop();
             }
-            stack.push((x2, s2));
-            println!("{stack:?}");
+        
+            stack.push(time);
         }
-
-        println!("==========================");
         stack.len() as i32
     }
 }
