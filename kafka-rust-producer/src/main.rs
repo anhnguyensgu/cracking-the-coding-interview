@@ -1,10 +1,11 @@
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use rdkafka::{
-    producer::{BaseRecord, FutureProducer, FutureRecord},
+    producer::{FutureProducer, FutureRecord},
     ClientConfig,
 };
 use serde::{Deserialize, Serialize};
+use tokio::time;
 
 #[tokio::main]
 async fn main() {
@@ -29,15 +30,25 @@ async fn main() {
         .unwrap()
         .as_secs() as i64;
     order.expired_at += a;
-    producer
-        .send(
-            FutureRecord::to("order-service.order-status")
-                .key(order.order_id.as_str())
-                .payload(sample),
-            Duration::from_millis(1000),
-        )
-        .await
-        .unwrap();
+    order.order_status = "CANCELLED".into();
+
+    let item = 10000;
+    for i in 0..item {
+        let mut a = order.clone();
+        a.order_id = format!("order-{i}");
+        let order_payload = serde_json::to_string(&a).unwrap();
+        producer
+            .send(
+                FutureRecord::to("order-service.order-status")
+                    .key(order.order_id.as_str())
+                    .payload(&order_payload),
+                Duration::from_millis(1000),
+            )
+            .await
+            .unwrap();
+    }
+
+    // time::sleep(Duration::from_secs(10)).await;
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
