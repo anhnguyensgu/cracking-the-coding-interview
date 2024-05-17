@@ -30,9 +30,11 @@ async fn main() {
         .unwrap()
         .as_secs() as i64;
     order.expired_at += a;
-    order.order_status = "CANCELLED".into();
+    order.order_status = "ASSIGNED".into();
+    order.cancel_by = Some("DRIVER".into());
+    order.last_driver_id = Some("1".into());
 
-    let item = 10000;
+    let item = 1;
     for i in 0..item {
         let mut a = order.clone();
         a.order_id = format!("order-{i}");
@@ -88,6 +90,7 @@ pub struct Order {
     pub is_cancel_by_driver: bool,
     #[serde(rename = "created_by")]
     pub created_by: String,
+    pub cancel_by: Option<String>,
     pub polylines: Vec<Polyline>,
     #[serde(rename = "actor_role")]
     pub actor_role: String,
@@ -102,6 +105,7 @@ pub struct Order {
     pub source: String,
     #[serde(rename = "commission_drivers")]
     pub commission_drivers: Vec<CommissionDriver>,
+    pub last_driver_id: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
