@@ -4,37 +4,36 @@ struct Solution;
 #[allow(dead_code)]
 impl Solution {
     pub fn candy(ratings: Vec<i32>) -> i32 {
-        let mut ans = 0;
+        let mut ans = 1;
         let mut j = 0;
         let mut i = 1;
         let mut cur = 1;
+        let mut peak = 1;
         while i < ratings.len() {
-            if ratings[i] == ratings[i - 1] {
-                let z = i - 1;
-                (0..=z - j).for_each(|c| {
-                    ans += cur - c;
-                });
-                println!("{j} {z} count {ans} eq");
-                cur = 1;
-                j = i;
-            } else if ratings[i] > ratings[i - 1] {
-                let z = i - 1;
-                (0..=z - j).for_each(|c| {
-                    ans += cur + c;
-                });
-                println!("{j} {z} count {ans} greater");
-                j = i;
-                cur = cur - z + j;
-            }
+            match ratings[i].cmp(&ratings[i - 1]) {
+                std::cmp::Ordering::Less => {
+                    let height = i - j;
+                    if height >= peak {
+                        ans += height + 1;
+                    } else {
+                        ans += height;
+                    }
+                    cur = 1;
+                }
+                std::cmp::Ordering::Equal => {
+                    cur = 1;
+                    peak = cur;
+                    ans += cur;
+                    j = i;
+                }
+                std::cmp::Ordering::Greater => {
+                    cur += 1;
+                    peak = cur;
+                    ans += cur;
+                    j = i;
+                }
+            };
             i += 1;
-        }
-
-        if j < ratings.len() {
-            let len = ratings.len();
-            println!("{j} {len} cur: {cur}");
-            (0..ratings.len() - j).for_each(|c| {
-                ans += cur + c;
-            });
         }
 
         ans as i32
@@ -71,12 +70,21 @@ mod test {
         assert_eq!(ans, expected);
 
         println!("==============");
-        // 0 0 count 1 greater
-        // 1 2 count 6 eq
-        // 3 5 cur: 1
         let ratings = vec![1, 3, 2, 2, 1];
         let ans = Solution::candy(ratings);
         let expected = 7;
+        assert_eq!(ans, expected);
+
+        println!("==============");
+        let ratings = vec![1, 2, 4, 3, 2, 1];
+        let ans = Solution::candy(ratings);
+        let expected = 13;
+        assert_eq!(ans, expected);
+
+        println!("==============");
+        let ratings = vec![1, 2, 3, 4, 3];
+        let ans = Solution::candy(ratings);
+        let expected = 11;
         assert_eq!(ans, expected);
     }
 }
